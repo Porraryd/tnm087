@@ -4,6 +4,8 @@ plot (gfun);
 figure();
 plot (2.^gfun);
 
+%test commit
+
 %%
 %Read the images
 for i=1:14
