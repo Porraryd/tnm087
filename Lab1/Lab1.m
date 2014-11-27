@@ -1,4 +1,4 @@
-%%
+%% Load the gfun data and plot
 load ('gfun.mat');
 plot (gfun);
 figure();
@@ -12,6 +12,8 @@ for i=1:14
     imagesgray(:,:,i) = rgb2gray(images(:,:,:,i));
 end
 
+
+%%
 %Find the x and y of the max intensity of the first image
 [maxVal ind] = max(max(imagesgray(:,:,1)));
 [x y] = ind2sub(size(imagesgray(:,:,1)), ind);
@@ -41,7 +43,7 @@ hold on
 plot(minValues)
 plot(medianValues)
 
-%%
+%% E and T
 %tj
 t = zeros(14,1);
 t(1) = 10;
@@ -63,18 +65,25 @@ zmax = 255;
 
 W=images;
 W(W > zmax/2) = zmax - W(W > zmax/2);
+W(W < 20) = 0;
+
+%change to double and normalize
 W=double(W);
 W = W/255;
 
 %% Calculate the final image
 weigthedImage = W(:,:,:,1) .* E(:,:,:,1);
 finalImage = zeros(size(weigthedImage));
+weightSum =  W(:,:,:,1);
  for n=2:14
         weigthedImage = W(:,:,:,n) .* E(:,:,:,n);
+        weightSum = weightSum + W(:,:,:,n);
         finalImage = imadd(finalImage, weigthedImage);
 
  end
-    
+ finalImage = finalImage./weightSum;
+ finalImage = tonemap(finalImage);
+ imshow(finalImage);
  
 %%
 %Plot E
