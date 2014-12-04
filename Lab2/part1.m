@@ -32,23 +32,35 @@ for m = 1:100
     Maskm = (QR == m);
     
     %Pixel values where M is true
-    pixelValuesCanon = sum(CWhite1(:,:) .* uint8((Maskm(:,:))));
-    pixelValuesHolga = sum(HWhite1(:,:) .* uint8((Maskm(:,:))));
+    pixelValuesCanon = CWhite1(:,:) .* uint8((Maskm(:,:)));
+    pixelValuesHolga = HWhite1(:,:) .* uint8((Maskm(:,:)));
     
     %Sum of the pixels
-    pixelSumCanon(m) = sum(pixelValuesCanon);
-    pixelSumHolga(m) = sum(pixelValuesHolga);
-    
-    %Average of the pixel values
-    pixelAveCanon(m) = mean(pixelValuesCanon);
-    pixelAveHolga(m) = mean(pixelValuesHolga);
+    pixelSumCanon(m) = sum(sum(pixelValuesCanon));
+    pixelSumHolga(m) = sum(sum(pixelValuesHolga));
     
     %Number of objectpoints in Mask m
-    objpoints(m) = sum(sum(Maskm));
+    objpoints = sum(sum(Maskm));
     
+    %Average of the pixel values
+    pixelAveCanon(m) = sum(sum(pixelValuesCanon))/objpoints;
+    pixelAveHolga(m) = sum(sum(pixelValuesHolga))/objpoints;
     
+    %normPixelAveCanon(m) = pixelAveCanon(m)/max(pixelAveCanon(:))
+   
 end
+
+normPixelAveCanon = pixelAveCanon / max(pixelAveCanon(:));
+normPixelAveHolga = pixelAveHolga / max(pixelAveHolga(:));
 
 %%
 plot(pixelAveCanon);
+hold on
+plot(pixelAveHolga);
+
+figure
+
+plot(normPixelAveCanon);
+hold on
+plot(normPixelAveHolga);
 

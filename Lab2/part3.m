@@ -23,10 +23,5 @@ A(3,3) = 1;
 A = affine2d(A);
 
 warpedImage = imwarp(Cim, A, 'OutputView', imref2d(size(Cim)));
-fusedImage = uint8(zeros(500, 512, 3));
-fusedImage(:,:,1) = warpedImage(:,:);
-fusedImage(:,:,2) = Him(:,:);
-fusedImage(:,:,3) = 0;
 
-
-imshow(fusedImage);
+imshowpair(warpedImage, Him);
