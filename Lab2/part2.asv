@@ -21,7 +21,7 @@ ratio = EyeFilterImage./MFilterImage;
 
 newMask = ones(46);
 
-%Find the points where the ratio is close to max 
+%Find the points where the ratio is close t
 ratio(ratio < max(ratio(:)) - 0.01)= 0;
 M = imregionalmax(ratio);
 M = double(M);

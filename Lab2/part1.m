@@ -1,5 +1,5 @@
 %A
-%Read in the images 
+%Read the images 
 N = 512;
 
 CWhite1 = imresize(imread('Cwhite1.jpg'), [N N]);
