@@ -22,15 +22,15 @@ ratio = EyeFilterImage./MFilterImage;
 newMask = ones(46);
 
 %Find the points where the ratio is close to max 
-ratio(ratio < max(ratio(:)) - 0.01)= 0;
+ratio(ratio < max(ratio(:)) * 0.95)= 0;
 M = imregionalmax(ratio);
 M = double(M);
-M = imfilter(M, newMask);
+MS = imfilter(M, newMask);
 
 %%
 
 %To remove the red from the original image
-reversedImg = 1-M;
+reversedImg = 1-MS;
 image2 = im2double(img);
 
 reversedImg(reversedImg < 1) = 0.1;

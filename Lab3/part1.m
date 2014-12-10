@@ -69,5 +69,52 @@ FFT2EdgeCanon = FFT2EdgeCanon/abs(FFT2EdgeCanon(256,256));
 FFT2EdgeHolga = FFT2EdgeHolga/abs(FFT2EdgeHolga(256,256));
 FFT2EdgeSony = FFT2EdgeSony/abs(FFT2EdgeSony(256,256));
 FFT2EdgeScanner = FFT2EdgeScanner/abs(FFT2EdgeScanner(256,256));
-A = abs(FFT2EdgeScanner);
 
+FFT2EdgeCanonA = abs(FFT2EdgeCanon);
+FFT2EdgeHolgaA = abs(FFT2EdgeHolga);
+FFT2EdgeSonyA = abs(FFT2EdgeSony);
+FFT2EdgeScannerA = abs(FFT2EdgeScanner);
+
+
+N= 512;
+%Create grid in xy plane
+[X,Y] = meshgrid((1:N));
+
+%Transform from cartesian to polar coordinates (Theta, rho)
+[T,R] = cart2pol(X-N/2,Y-N/2);
+ 
+%Scale all values in matris R, such that R(N/2 - 1 , 1) = 1
+SR = R ./ R(N/2 - 1, 1); % ./255
+
+%Quantize to array with values between 1-100
+QR = uint8(round(100*(SR./max(SR(:)))));
+
+for m = 1:100  
+    %Create mask
+    Maskm = (QR == m);
+    
+    %Pixel values where M is true
+    pixelValuesCanon = FFT2EdgeCanonA .* double(Maskm(:,:));
+    pixelValuesHolga = FFT2EdgeHolgaA .* double(Maskm(:,:));
+    pixelValuesSony = FFT2EdgeSonyA .*double((Maskm(:,:)));
+    pixelValuesScanner = FFT2EdgeScannerA .* double((Maskm(:,:)));
+    
+    %Average of the pixel values
+    pixelAveCanon(m) = sum(sum(pixelValuesCanon))/sum(sum(Maskm));
+    pixelAveHolga(m) = sum(sum(pixelValuesHolga))/sum(sum(Maskm));
+    pixelAveSony(m) = sum(sum(pixelValuesSony))/sum(sum(Maskm));
+    pixelAveScanner(m) = sum(sum(pixelValuesScanner))/sum(sum(Maskm));
+
+end
+
+%Create a sharpness weight
+SharpWeight = zeros ( 1, 100);
+for i=1:49
+    SharpWeight(50-i) = i/25;
+    SharpWeight(51+i) = i/25;
+end
+
+CanonSharp = sum(pixelAveCanon.*SharpWeight)
+HolgaSharp = sum(pixelAveHolga.*SharpWeight)
+SonySharp = sum(pixelAveSony.*SharpWeight)
+ScannerSharp = sum(pixelAveScanner.*SharpWeight)
