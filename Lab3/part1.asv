@@ -84,9 +84,42 @@ N= 512;
 [T,R] = cart2pol(X-N/2,Y-N/2);
  
 %Scale all values in matris R, such that R(N/2 - 1 , 1) = 1
-R = R ./ R(N/2 - 1, 1); % ./255    
+SR = R ./ R(N/2 - 1, 1); % ./255    
+
+%Quantize to array with values between 1-100
+QR = uint8(round(100*(SR./max(SR(:)))));
+
+for m = 1:100  
+    %Create mask
+    Maskm = (QR == m);
+    
+    %Pixel values where M is true
+    pixelValuesCanon = FFT2EdgeCanonA .* double(Maskm(:,:));
+    pixelValuesHolga = FFT2EdgeHolgaA .* double(Maskm(:,:));
+    pixelValuesSony = FFT2EdgeSonyA .*double((Maskm(:,:)));
+    pixelValuesScanner = FFT2EdgeScannerA .* double((Maskm(:,:)));
+    
+    %Average of the pixel values
+    pixelAveCanon(m) = sum(sum(pixelValuesCanon))/sum(sum(Maskm));
+    pixelAveHolga(m) = sum(sum(pixelValuesHolga))/sum(sum(Maskm));
+    pixelAveSony(m) = sum(sum(pixelValuesSony))/sum(sum(Maskm));
+    pixelAveScanner(m) = sum(sum(pixelValuesScanner))/sum(sum(Maskm));
+
+end
+
+%Create a sharpness weight
+SharpWeight = zeros ( 1, 100);
+for i=1:49
+    SharpWeight(50-i) = i/25;
+    SharpWeight(51+i) = i/25;
+end
 
 CanonSharp = sum(sum(FFT2EdgeCanonA.*R))
 HolgaSharp = sum(sum(FFT2EdgeHolgaA.*R))
 SonySharp = sum(sum(FFT2EdgeSonyA.*R))
 ScannerSharp =sum(sum(FFT2EdgeScannerA.*R))
+
+%CanonSharp = sum(pixelAveCanon.*SharpWeight)
+%HolgaSharp = sum(pixelAveHolga.*SharpWeight)
+%SonySharp = sum(pixelAveSony.*SharpWeight)
+%ScannerSharp = sum(pixelAveScanner.*SharpWeight)
