@@ -1,4 +1,4 @@
-tnm087
+Labs in TNM087
 ======
 
-pr0-labs in TNM087 
+Labs made in the course TNM087 at Linköping University. Pretty old stuff. 
